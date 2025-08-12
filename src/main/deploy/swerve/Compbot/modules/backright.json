@@ -1,0 +1,27 @@
+{
+  "drive": {
+    "type": "krakenx60",
+    "id": 7,
+    "canbus": null
+  },
+  "angle": {
+    "type": "sparkmax_neo",
+    "id": 8,
+    "canbus": null
+  },
+  "encoder": {
+    "type": "ctre_mag",
+    "id": 4,
+    "canbus": null
+  },
+  "inverted": {
+    "drive": false,
+    "angle": true
+  },
+  "absoluteEncoderOffset": 45.2,
+  "location": {
+    "front": -11.875,
+    "left": -11.375
+  },
+  "absoluteEncoderInverted": false
+}
