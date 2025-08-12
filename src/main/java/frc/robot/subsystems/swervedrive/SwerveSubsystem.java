@@ -82,39 +82,11 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   private final boolean visionDriveTest = false;
   
-  /**
-   * GCF REMOVE
-   * PhotonVision class to keep an accurate odometry.
-   */
-  /** 
-   * GCF REMOVE
-   *
-   * private Vision vision;
-   */
 
   boolean alignedState = false;
 
   TaggedLogger logger = LoggingMaster.getLogger(getClass());
   
-  /** 
-   * 
-   * GCF REMOVE
-   * 
-  
-  private Map<Translation2d, Integer> translationToTagMap = new HashMap<>();
-
-  private Map<Integer, Translation2d> tagToTranslationMap = new HashMap<>();
-
-  private Translation2d centerBlueReef;
-
-  private List<Translation2d> tagTranslations = new ArrayList<>();
-
-  private Pose2d targetPose;
-
-  double maxDistanceFromCenterToBeClose = 3;// Distance in meters
-
-  */
-
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
    *
@@ -151,22 +123,8 @@ public class SwerveSubsystem extends SubsystemBase {
     // over the internal encoder and push the offsets onto it. Throws warning if not
     // possible
     
-    /** 
-     * GCF REMOVE
-    if (visionDriveTest) {
-      setupPhotonVision();
-      // Stop the odometry thread if we are using vision that way we can synchronize
-      // updates better.
-      swerveDrive.stopOdometryThread();
-    }
-    */
     setupPathPlanner();
 
-    /**
-     * GCF Remove
-    
-    setUpTagMaps();
-    */
 
     Double driveStatorCurrentLimit = RobotContainer.robotParameters.getDriveStatorCurrentLimit();
     if (driveStatorCurrentLimit != null) {
@@ -198,27 +156,6 @@ public class SwerveSubsystem extends SubsystemBase {
     SmartDashboard.putData("navX", (Sendable) swerveDrive.getGyro().getIMU());
   }
 
-  /** 
-   * GCF REMOVE 
-  
-  void setUpTagMaps() {
-
-    for (int tagID = 17; tagID <= 22; tagID++) {
-
-      Translation2d translation = RobotContainer.aprilTagFieldLayout.getTagPose(tagID).get().getTranslation()
-          .toTranslation2d();
-
-      translationToTagMap.put(translation, tagID);
-      tagToTranslationMap.put(tagID, translation);
-
-      tagTranslations.add(translation);
-
-    }
-
-    centerBlueReef = tagToTranslationMap.get(17).plus(tagToTranslationMap.get(20)).div(2);
-
-  }
-  */
 
   public Command pathFinderCommand() {
 
@@ -249,31 +186,10 @@ public class SwerveSubsystem extends SubsystemBase {
       * }
       */
 
-  /**
-   * GCF Remove
-   * Setup the photon vision class.
-   */
-
-  /**
-   * GCF REMOVE
-   * 
-  
-  public void setupPhotonVision() {
-    vision = new Vision(swerveDrive::getPose, swerveDrive.field);
-  }
-  */
-
 
   @Override
   public void periodic() {
     // When vision is enabled we must manually update odometry in SwerveDrive
-    /*
-     * if (visionDriveTest)
-     * {
-     * swerveDrive.updateOdometry();
-     * vision.updatePoseEstimation(swerveDrive);
-     * }
-     */
 
     // it doesn't seem that poses published to NT make it into the
     // wpilog file via NetworkTableInstance.startEntryDataLog, so let's be
@@ -282,57 +198,6 @@ public class SwerveSubsystem extends SubsystemBase {
     DogLog.log("frc3620/swerve/pose", swerveDrive.getPose());
 
     SmartDashboard.putNumber("frc3620/swerve/yaw", swerveDrive.getYaw().getDegrees());
-    // SmartDashboard.putNumber("frc3620/swerve/nearestTagID", getNearestTag(swerveDrive.getPose()));
-    /**
-     * GCF REMOVE
-    
-    if (targetPose != null) {
-      SmartDashboard.putNumber("frc3620/swerve/distanceToTargetPose",
-          swerveDrive.getPose().getTranslation().getDistance(targetPose.getTranslation()));
-
-      if (swerveDrive.getPose().getTranslation().getDistance(targetPose.getTranslation()) < .06) {// if pose is less
-                                                                                                  // than 2 inches away
-
-        alignedState = true;
-      } else {
-        alignedState = false;
-      }
-
-      SmartDashboard.putBoolean("Are we alligned?", alignedState);
-    }
-
-    if (swerveDrive.getPose() != null) {
-      if (RobotContainer.visionSubsystem.getCameraData(Camera.FRONT).megaTag1.getPoseEstimate() != null) {
-        SmartDashboard.putNumber("frc3620/swerve/frontMegaTag1Error",
-            swerveDrive.getPose().getTranslation().getDistance(
-                RobotContainer.visionSubsystem.getCameraData(Camera.FRONT).megaTag1.getPoseEstimate().pose
-                    .getTranslation()));
-      }
-      if (RobotContainer.visionSubsystem.getCameraData(Camera.FRONT).megaTag2.getPoseEstimate() != null) {
-        SmartDashboard.putNumber("frc3620/swerve/frontMegaTag2Error",
-            swerveDrive.getPose().getTranslation().getDistance(
-                RobotContainer.visionSubsystem.getCameraData(Camera.FRONT).megaTag2.getPoseEstimate().pose
-                    .getTranslation()));
-      }
-      */
-      
-      /*
-      
-      * GCF REMOVE
-
-
-      if (RobotContainer.visionSubsystem.getCameraData(Camera.BACK).megaTag1.getPoseEstimate() != null) {
-        SmartDashboard.putNumber("frc3620/swerve/backMegaTag1Error", swerveDrive.getPose().getTranslation().getDistance(
-            RobotContainer.visionSubsystem.getCameraData(Camera.BACK).megaTag1.getPoseEstimate().pose
-                .getTranslation()));
-      }
-      if (RobotContainer.visionSubsystem.getCameraData(Camera.BACK).megaTag2.getPoseEstimate() != null) {
-        SmartDashboard.putNumber("frc3620/swerve/backMegaTag2Error", swerveDrive.getPose().getTranslation().getDistance(
-            RobotContainer.visionSubsystem.getCameraData(Camera.BACK).megaTag2.getPoseEstimate().pose
-                .getTranslation()));
-      }
-     
-      } */
     
   }
 
@@ -408,53 +273,6 @@ public class SwerveSubsystem extends SubsystemBase {
     PathfindingCommand.warmupCommand().schedule();
   }
 
-/** 
- * GCF REMOVE
- * 
-
-public void squareUp(){
-  //NavX reset method
-    var color = DriverStation.getAlliance();
-      if(color.isPresent()){
-        if(color.get()==Alliance.Red){
-          var pose = RobotContainer.swerveSubsystem.getPose();
-          var newPose = new Pose2d(pose.getTranslation(), Rotation2d.fromDegrees(180));
-          RobotContainer.swerveSubsystem.resetOdometry(newPose);
-        }else{
-          var pose = RobotContainer.swerveSubsystem.getPose();
-          var newPose = new Pose2d(pose.getTranslation(), Rotation2d.fromDegrees(0));
-          RobotContainer.swerveSubsystem.resetOdometry(newPose);
-        }
-      }
-} */
-
-  /**
-   * GCF REMOVE
-   * 
-   * Aim the robot at the target returned by PhotonVision.
-   *
-   * @return A {@link Command} which will run the alignment.
-   */
-  /**
-   * GCF REMOVE
-   *
-  
-  public Command aimAtTarget(Cameras camera) {
-
-    return run(() -> {
-      Optional<PhotonPipelineResult> resultO = camera.getBestResult();
-      if (resultO.isPresent()) {
-        var result = resultO.get();
-        if (result.hasTargets()) {
-          drive(getTargetSpeeds(0,
-              0,
-              Rotation2d.fromDegrees(result.getBestTarget()
-                  .getYaw()))); // Not sure if this will work, more math may be required.
-        }
-      }
-    });
-  }
-  */
 
   /**
    * Get the path follower with events.
@@ -953,32 +771,4 @@ public void squareUp(){
     return swerveDrive;
   }
 
-  /**
-   * GCF REMOVE
-   * 
-  
-  public int getNearestTag(Pose2d pose) {
-    Translation2d translation = pose.getTranslation();
-    Translation2d nearestTagTranslation = translation.nearest(tagTranslations);
-
-    if (translation.getDistance(centerBlueReef) < maxDistanceFromCenterToBeClose) {
-      return translationToTagMap.get(nearestTagTranslation);
-    } else {
-      return -1;
-    }
-  }
-  */
-
-  /** 
-   * GCF REMOVE
-   * 
-  
-  public void setTargetPose(Pose2d pose) {
-    targetPose = pose;
-  }
-
-  public Pose2d getTargetPose() {
-    return targetPose;
-  }
-  */
 }
