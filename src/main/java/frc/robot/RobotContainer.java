@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.questnav.QuestNavSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import swervelib.SwerveDrive;
 import swervelib.SwerveInputStream;
@@ -49,6 +50,7 @@ public class RobotContainer {
 
   // Subsystems
   public static SwerveSubsystem swerveSubsystem;
+  public static QuestNavSubsystem questNavSubsystem;
 
   public RobotContainer() {
 
@@ -112,6 +114,9 @@ public class RobotContainer {
 
       swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), swerveFolder));
       SmartDashboard.putData("frc3620/swerveSubsystem", swerveSubsystem);
+
+      questNavSubsystem = new QuestNavSubsystem(swerveSubsystem);
+      
 
       }
     
