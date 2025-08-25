@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import gg.questnav.questnav.PoseFrame;
@@ -31,6 +32,9 @@ public class QuestNavSubsystem extends SubsystemBase {
   public void updateVisionMeasurement() {
     Matrix<N3, N1> QUESTNAV_STD_DEVS = VecBuilder.fill(0.02,0.02,0.035);
 
+    SmartDashboard.putBoolean("QuestNav.isConnected", questNav.isConnected());
+    SmartDashboard.putBoolean("QuestNav.isTracking", questNav.isTracking());
+    
     if (questNav.isConnected() && questNav.isTracking()) {
 
       PoseFrame[] questFrames = questNav.getAllUnreadPoseFrames();
@@ -53,6 +57,12 @@ public class QuestNavSubsystem extends SubsystemBase {
       }
     }
   }
+
+  public void setQuestNavPose(Pose2d pose) {
+    questNav.setPose(pose.transformBy(QUEST_TO_ROBOT));
+  }
+
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

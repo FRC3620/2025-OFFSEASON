@@ -20,6 +20,9 @@ import org.usfirst.frc3620.ChameleonController.ControllerType;
 import org.usfirst.frc3620.logger.LoggingMaster;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
@@ -51,6 +54,11 @@ public class RobotContainer {
   // Subsystems
   public static SwerveSubsystem swerveSubsystem;
   public static QuestNavSubsystem questNavSubsystem;
+
+  // Set Initial Pose for Testing Purposes
+  private static final Pose2d INTIAL_ROBOT_POSE = new Pose2d(Units.inchesToMeters(297.5),
+                                                             Units.inchesToMeters(146.6),
+                                                             new Rotation2d(0));
 
   public RobotContainer() {
 
