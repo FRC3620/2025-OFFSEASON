@@ -27,6 +27,12 @@ public class QuestNavSubsystem extends SubsystemBase {
   /** Creates a new QuestNav. */
   public QuestNavSubsystem(SwerveSubsystem swerveSubsystem) {
     this.swerveSubsystem = swerveSubsystem;
+    
+    // Set intial Position -- Right now, this assumes we're sitting in front of AprilTag 10 on the red side of the field
+    questNav.setPose(new Pose2d(Units.inchesToMeters(481.39 - 28),  // Subtract 28" for length of robot
+                                Units.inchesToMeters(158.50), 
+                                new Rotation2d(Math.toRadians(180))));
+
   }
 
   public void updateVisionMeasurement() {
