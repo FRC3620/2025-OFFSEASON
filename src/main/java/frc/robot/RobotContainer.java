@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.questnav.QuestNavSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import swervelib.SwerveDrive;
@@ -54,6 +55,8 @@ public class RobotContainer {
   // Subsystems
   public static SwerveSubsystem swerveSubsystem;
   public static QuestNavSubsystem questNavSubsystem;
+  public static VisionSubsystem visionSubsystem;
+
 
   // Set Initial Pose for Testing Purposes
   private static final Pose2d INTIAL_ROBOT_POSE = new Pose2d(Units.inchesToMeters(297.5),
@@ -124,6 +127,8 @@ public class RobotContainer {
       SmartDashboard.putData("frc3620/swerveSubsystem", swerveSubsystem);
 
       questNavSubsystem = new QuestNavSubsystem(swerveSubsystem);
+
+      visionSubsystem = new VisionSubsystem(swerveSubsystem.getSwerveDrive());
       
 
       }
