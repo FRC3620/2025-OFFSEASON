@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.questnav;
 
+import org.usfirst.frc3620.NTStructs;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -21,7 +23,7 @@ import gg.questnav.questnav.QuestNav;
 public class QuestNavSubsystem extends SubsystemBase {
 
   public QuestNav questNav = new QuestNav();
-  private Transform2d QUEST_TO_ROBOT = new Transform2d(Units.inchesToMeters(15.0),0.0,new Rotation2d());
+  private Transform2d QUEST_TO_ROBOT = new Transform2d(Units.inchesToMeters(-15.0),0.0,new Rotation2d());
   private SwerveSubsystem swerveSubsystem;
 
   /** Creates a new QuestNav. */
@@ -29,9 +31,9 @@ public class QuestNavSubsystem extends SubsystemBase {
     this.swerveSubsystem = swerveSubsystem;
     
     // Set intial Position -- Right now, this assumes we're sitting in front of AprilTag 10 on the red side of the field
-    questNav.setPose(new Pose2d(Units.inchesToMeters(481.39 - 28),  // Subtract 28" for length of robot
-                                Units.inchesToMeters(158.50), 
-                                new Rotation2d(Math.toRadians(180))));
+    //questNav.setPose(new Pose2d(Units.inchesToMeters(481.39 - 28),  // Subtract 28" for length of robot
+    //                            Units.inchesToMeters(158.50), 
+    //                            new Rotation2d(Math.toRadians(180))));
 
   }
 
@@ -50,12 +52,16 @@ public class QuestNavSubsystem extends SubsystemBase {
       for (PoseFrame questFrame: questFrames) {
         //Get the Pose of the Quest
         Pose2d questPose = questFrame.questPose();
+        NTStructs.publishToSmartDashboard("frc3620/questNavPose", questPose);
         
         //get the timestamp for when the data was sent
         double timestamp = questFrame.dataTimestamp();
 
         // Transform by the mount pose to get the robot pose
-        Pose2d robotPose = questPose.transformBy(QUEST_TO_ROBOT.inverse());
+        Pose2d robotPose = questPose.transformBy(QUEST_TO_ROBOT);
+        
+        // Publish the pose to NT
+        NTStructs.publishToSmartDashboard("frc3620/questRobotPose", robotPose);
 
         // Add the mesaurement to the pose Estimator
         swerveSubsystem.getSwerveDrive().addVisionMeasurement(robotPose, timestamp,QUESTNAV_STD_DEVS);
@@ -65,7 +71,7 @@ public class QuestNavSubsystem extends SubsystemBase {
   }
 
   public void setQuestNavPose(Pose2d pose) {
-    questNav.setPose(pose.transformBy(QUEST_TO_ROBOT));
+    questNav.setPose(pose.transformBy(QUEST_TO_ROBOT.inverse()));
   }
 
 

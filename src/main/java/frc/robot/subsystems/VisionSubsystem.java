@@ -8,13 +8,18 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 
 import java.util.Optional;
 
+import org.usfirst.frc3620.NTStructs;
+
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
+import gg.questnav.questnav.QuestNav;
 import limelight.networktables.AngularVelocity3d;
 import limelight.networktables.LimelightPoseEstimator;
 import limelight.networktables.LimelightSettings;
@@ -37,12 +42,13 @@ public class VisionSubsystem extends SubsystemBase {
 
   SwerveDrive swerveDrive;
 
-  public static final Pose3d LIMELIGHT_POSE = new Pose3d(0.0762,
-                                                          -0.3236,
-                                                          0.5207,
+
+  public static final Pose3d LIMELIGHT_POSE = new Pose3d(Units.inchesToMeters(2.75),
+                                                         Units.inchesToMeters(-13.125),
+                                                         Units.inchesToMeters(20.25),
                                                           new Rotation3d(Units.degreesToRadians(0), 
                                                                          Units.degreesToRadians(-14), 
-                                                                         Units.degreesToRadians(90)));
+                                                                         Units.degreesToRadians(0)));
 
   public VisionSubsystem(SwerveDrive swerveDrive) {
 
@@ -65,22 +71,29 @@ public class VisionSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    // Check to see if we've already found our location via AprilTag localization. If we have, move on. If not, check 
-    // to see if an AprilTag is visible and update location
+    // Get the Limelight Pose on every iteration. Only update odometry if 
+    // getAprilTagLocationSet is false
 
-    if (!getAprilTagLocationSet()) {
-
-      // Get MegaTag2 pose
-      Optional<PoseEstimate> visionEstimate = limelight.getPoseEstimator(true).getPoseEstimate();
-      // If the pose is present
-      visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
-        if (visionEstimate.get().tagCount > 0) {
-          // Add it to the pose estimator.
+    Optional<PoseEstimate> visionEstimate = limelight.getPoseEstimator(true).getPoseEstimate();
+    
+    visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
+      if (visionEstimate.get().tagCount > 0) {
+        // Log pose estimate to SmartDashboard
+        NTStructs.publishToSmartDashboard("frc3620/visionPose3d", poseEstimate.pose);
+        SmartDashboard.putString("frc3620/visionPose", poseEstimate.pose.toString());
+        NTStructs.publishToSmartDashboard("frc3620/visionPose2d", poseEstimate.pose.toPose2d());
+        // If getAprilTagLocationSet is false, add it to the pose estimator.
+        if (!getAprilTagLocationSet()) {
           swerveDrive.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds);
           this.locationFoundViaAprilTag = true;
+
+          // Tell QuestNav we have a new location
+          RobotContainer.questNavSubsystem.setQuestNavPose(poseEstimate.pose.toPose2d());
+          
         }
-      });
-    }
+      }
+    });
+
 
     SmartDashboard.putBoolean("frc3620/locationFoundViaAprilTag", locationFoundViaAprilTag);
   }
@@ -88,4 +101,9 @@ public class VisionSubsystem extends SubsystemBase {
   public boolean getAprilTagLocationSet() {
     return this.locationFoundViaAprilTag;
   }
+
+  public void resetAprilTagLocationSet() {
+    this.locationFoundViaAprilTag = false;
+  }
+
 }

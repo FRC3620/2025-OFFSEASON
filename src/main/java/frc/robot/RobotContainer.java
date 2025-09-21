@@ -96,6 +96,11 @@ public class RobotContainer {
     //TODO: NavX Reset
     driverJoystick.button(XBoxConstants.BUTTON_A, FlySkyConstants.BUTTON_SWA).onTrue(new InstantCommand(() -> swerveSubsystem.zeroGyro()));
     
+    driverJoystick.button(XBoxConstants.BUTTON_Y, FlySkyConstants.BUTTON_SWC).onTrue(new InstantCommand(() -> {
+      if (visionSubsystem != null) {
+        visionSubsystem.resetAprilTagLocationSet();
+      }
+    }));
   }
 
 
