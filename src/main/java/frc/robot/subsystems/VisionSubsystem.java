@@ -73,6 +73,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     // Get the Limelight Pose on every iteration. Only update odometry if 
     // getAprilTagLocationSet is false
+  
 
     Optional<PoseEstimate> visionEstimate = limelight.getPoseEstimator(true).getPoseEstimate();
     
@@ -80,7 +81,6 @@ public class VisionSubsystem extends SubsystemBase {
       if (visionEstimate.get().tagCount > 0) {
         // Log pose estimate to SmartDashboard
         NTStructs.publishToSmartDashboard("frc3620/visionPose3d", poseEstimate.pose);
-        SmartDashboard.putString("frc3620/visionPose", poseEstimate.pose.toString());
         NTStructs.publishToSmartDashboard("frc3620/visionPose2d", poseEstimate.pose.toPose2d());
         // If getAprilTagLocationSet is false, add it to the pose estimator.
         if (!getAprilTagLocationSet()) {
@@ -89,7 +89,7 @@ public class VisionSubsystem extends SubsystemBase {
 
           // Tell QuestNav we have a new location
           RobotContainer.questNavSubsystem.setQuestNavPose(poseEstimate.pose.toPose2d());
-          
+
         }
       }
     });
